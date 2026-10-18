@@ -1,7 +1,3 @@
-# 参考资料解析缓存：由 ../resources/ba&re/ 的原书 PDF 转换所得全文（非源文件）。
-# 与 ../software-engineering/.gitignore 的 resources/ 规则同源——参考材料及其派生物不纳入仓库。
-_parse_cache/
-
 # 系统与编辑器杂物
 .DS_Store
 Thumbs.db
