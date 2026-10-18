@@ -1,0 +1,69 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "RawRequirementArtifact",
+  "description": "S2 output: elicited raw requirement material. In PACT terms this is the ThingRef of the raw_requirement Token produced by business_analyst from business_goal.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["raw_requirements"],
+  "properties": {
+    "raw_requirements": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "source", "statement", "traces_to_goal"],
+        "properties": {
+          "id": {"type": "string", "description": "Unique persistent label, e.g. RAW-001."},
+          "source": {"type": "string", "description": "Who said it / where it was observed (interview, workshop, document, observation)."},
+          "date": {"type": "string", "description": "Elicitation date (YYYY-MM-DD)."},
+          "technique": {"type": "string", "description": "Elicitation technique used (JTBD, event storming, negative scenarios, document analysis, ...)."},
+          "context": {"type": "string", "description": "Trigger conditions and participants."},
+          "statement": {"type": "string", "description": "Original statement in business language (implementation-leak cleaned or flagged)."},
+          "traces_to_goal": {"type": "string", "description": "ID of the business_goal this requirement supports. Orphans are forbidden (gate-2)."},
+          "open_questions": {"type": "array", "items": {"type": "string"}}
+        }
+      }
+    },
+    "coverage_report": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["stakeholder", "techniques_used", "coverage_status"],
+        "properties": {
+          "stakeholder": {"type": "string"},
+          "techniques_used": {"type": "array", "items": {"type": "string"}},
+          "coverage_status": {"type": "string", "enum": ["complete", "partial", "missing"]}
+        }
+      }
+    },
+    "conflict_flags": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["requirement_a", "requirement_b", "nature", "resolution_status"],
+        "properties": {
+          "requirement_a": {"type": "string"},
+          "requirement_b": {"type": "string"},
+          "nature": {"type": "string", "description": "Description of the contradiction."},
+          "resolution_status": {"type": "string", "enum": ["resolved", "pending", "escalated"]}
+        }
+      }
+    },
+    "implementation_leak_flags": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["requirement_id", "leaked_term"],
+        "properties": {
+          "requirement_id": {"type": "string"},
+          "leaked_term": {"type": "string"},
+          "suggested_abstraction": {"type": "string", "description": "Rewrite per kb/implementation-neutrality-patterns.yaml rewrite_rules."}
+        }
+      }
+    }
+  }
+}

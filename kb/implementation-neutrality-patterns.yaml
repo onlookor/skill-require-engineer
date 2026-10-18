@@ -1,0 +1,165 @@
+---
+# Implementation Neutrality Patterns Knowledge Base
+# Grounding: L1 verbatim from Robertson, Robertson & Reed (2024),
+# Mastering the Requirements Process 4th Ed., Chapter 16: Finding the Essence
+# Parse cache: _parse_cache/robertson.md (lines ~24980-25918)
+# Companion: kb/brown-cow-patterns.yaml (What/How axis), kb/problem-statement-patterns.yaml (R/S/W)
+
+module: implementation-neutrality-patterns
+grounding: verbatim
+schema_version: 1
+source: "Robertson, J., Robertson, S., & Reed, A. (2024). Mastering the Requirements Process, 4th Edition. Addison-Wesley. Chapter 16."
+
+# ===================================================================
+# CORE DEFINITIONS
+# ===================================================================
+core:
+  essence_definition: |
+    The essence is an abstraction, it's conceptual, it has no real-world technology, and that is
+    what makes it such a powerful requirements tool. By shaking off any implementation technology,
+    both current or proposed, human or organizational, you are left with only the problem itself.
+    You could say that the essence is the soul of the problem, but not its body.
+  problem_vs_solution: "A problem is an abstract thing. A solution is a physical thing."
+  mandate: "Separate the essence of the problem from any proposed solution."
+  why_find_essence:
+    - "The first, and most important, reason is that you solve the right problem."
+    - "Finding the essence means you avoid the presumed solution."
+  page_refs: "Ch.16 pp.462-464, 469"
+
+# ===================================================================
+# THE REPEATED-WHY METHOD (Ask Why — Again, and Again, and Again)
+# ===================================================================
+ask_why:
+  principle: |
+    You can often reverse engineer the essence from a technological implementation by asking why
+    repeatedly until you arrive at a statement that is clear of any technology and is the essence
+    of the problem.
+  termination_rule: |
+    Ask why as many times as you need to until you arrive at an essential answer and are satisfied
+    that you have discovered the right problem. (Not a fixed "five whys" count.)
+  canonical_example:
+    presumed_solution: "As a university professor, I want to search for a book by title so that I can check its price and availability."
+    why_chain:
+      - q: "Why search?"
+        a: "'Search' is a solution to something; it's not the problem. Finding something is the real business problem."
+      - q: "Why find a book?"
+        a: "He's putting together a reading list for his students."
+      - q: "Why search by title?"
+        a: "That's what he's always done — but it implies he already knows which book and leaves no scope for finding new books."
+      - q: "Why check the price?"
+        a: "Because the university sets a book budget for courses."
+      - q: "Why check availability?"
+        a: "Because students have to be able to buy it."
+    essential_rewrite: "As a university professor, I can assemble a reading list for my students so that the list contains my preferred books, the books are available, and the students can acquire the books within the university's budget for my course."
+  page_refs: "Ch.16 pp.470-473"
+
+# ===================================================================
+# PRESUMED SOLUTIONS (stakeholders state solutions, not problems)
+# ===================================================================
+presumed_solutions:
+  definition: |
+    People tend to express their needs in technological terms: "I need a content management system";
+    "I need a mobile device app"; "I need a drop-down menu". These presumed solutions are often
+    "flavor of the month, bright shiny object" solutions that might solve the problem but are far
+    more likely to disappoint.
+  handling: "Classify as Brown Cow Future-How; reverse-engineer into Future-What via ask_why."
+  page_refs: "Ch.16 p.469"
+
+# ===================================================================
+# THE FOUR TRAPS THAT MASQUERADE AS ESSENCE
+# ===================================================================
+traps:
+  technological_fossils:
+    definition: |
+      Technological solutions that have been part of a system for many years, yet the reason for
+      them has long since disappeared. They are mistakenly accepted as essence.
+    detection: "Ask why. If you don't get an answer that relates to essence, you probably have a fossil."
+    example: "Embossed credit-card numbers, originally for carbon-paper card imprint machines."
+    page_refs: "Ch.16 pp.473-474"
+  referred_pain:
+    definition: |
+      The symptom is felt in one place, but the cause of the problem lies elsewhere. Treating the
+      symptom (e.g. hiring more help-desk staff, call-back systems, calming music) leaves the root
+      cause untouched.
+    handling: "Investigate why the pain exists; uncover the essence of the underlying problem."
+    example: "Staff complain about long hold times at the help desk; root cause is systems that are hard to use or lack of training."
+    page_refs: "Ch.16 pp.474-476"
+  disguised_problems:
+    definition: |
+      The stated problem hides the real one. A proposed solution targets a symptom rather than the
+      true cause, which may have many alternatives.
+    handling: "Enumerate alternative causes before accepting the framing."
+    example: "Supermarket wants a new POS system for long checkout lines; real causes may be too few registers/clerks, slow scanners, slow bagging, or checkout-area design."
+    page_refs: "Ch.16 pp.476-478"
+
+# ===================================================================
+# LEAK DETECTION RULES (what makes [IMPLEMENTATION LEAK])
+# ===================================================================
+leak_detection:
+  flag_if_any:
+    - "statement names a technology, product, framework, or platform"
+    - "statement names UI mechanisms (button, page, screen, form, dropdown, checkbox)"
+    - "statement describes internal system mechanics (database transaction, repository call, internal message, UI framework refresh)"
+    - "statement fails the technology-swap test"
+  technology_swap_test: |
+    Would the statement still be true if the solution were delivered through a completely different
+    technology? (CLI instead of web app, paper process instead of software, batch instead of
+    real-time.) If not, it is a leak.
+  blacklist_ref: "../validators/implementation_leak_terms.yaml"
+
+# ===================================================================
+# ABSTRACTION REWRITE RULES (leak -> essence)
+# Rows marked grounding: derived implement the abstraction principle but are not verbatim quotes.
+# ===================================================================
+rewrite_rules:
+  - leaked: "search for X"
+    essence: "find X (search is one means of finding)"
+    grounding: L1
+    source: "Ch.16 p.471"
+  - leaked: "click/press/tap <UI element>"
+    essence: "<actor> initiates/submits/requests <business action>"
+    grounding: derived
+  - leaked: "fill in a form/field"
+    essence: "<actor> provides <information/credential>"
+    grounding: derived
+  - leaked: "call the API/interface"
+    essence: "<external party> requests <business service>"
+    grounding: derived
+  - leaked: "save to database / write record"
+    essence: "the business retains <record>"
+    grounding: derived
+  - leaked: "return HTTP 200 / status code"
+    essence: "the business confirms/accepts <action>"
+    grounding: derived
+  - leaked: "return HTTP 4xx/5xx / error"
+    essence: "the business refuses/cannot complete <action>"
+    grounding: derived
+  - leaked: "send token / JWT / cookie"
+    essence: "access rights are granted"
+    grounding: derived
+  - leaked: "<microservice/module name> does X"
+    essence: "<business capability> does X"
+    grounding: derived
+  - leaked: "screen/page displays Y"
+    essence: "<actor> is informed of Y"
+    grounding: derived
+
+# ===================================================================
+# POST-REPAIR VERIFICATION CHECKLIST
+# ===================================================================
+post_repair_checklist:
+  - "No term from implementation_leak_terms.yaml"
+  - "Observable from outside: a customer could watch it happen (phenomena b)"
+  - "Technology-swap test: statement survives replacing the entire solution technology"
+  - "Still traces to the same business goal after rewriting"
+
+# ===================================================================
+# LEGITIMATE TECHNICAL CONTENT (NOT a leak)
+# ===================================================================
+exceptions:
+  constraints:
+    definition: "A stakeholder or governing body with authority mandates a specific technology or standard."
+    handling: "Record as a constraint with rationale and source authority, never as a functional requirement."
+  world_properties:
+    definition: "Facts about the problem world that include existing technology (e.g. 'the current payroll system runs COBOL batch jobs nightly'). These describe the world, not the new machine."
+    cross_ref: "./problem-statement-patterns.yaml (W)"

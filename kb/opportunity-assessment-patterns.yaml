@@ -1,0 +1,116 @@
+---
+# Opportunity Assessment Patterns Knowledge Base
+# Grounding: L1 verbatim from Torres (2021) Continuous Discovery Habits Ch.1–2, 6–7
+module: opportunity-assessment-patterns
+schema_version: 1
+---
+
+canonical_terms:
+  opportunity:
+    term: "Opportunity"
+    definition: "Customer needs, pain points, and desires collectively. The opportunity space represents the problem space as well as the desire space."
+    source: "Torres 2021, Ch.2 p.25"
+    grounding: verbatim
+
+  desired_outcome:
+    term: "Desired outcome"
+    definition: "The business need that reflects how your team can create business value. Sets the scope for discovery; the root of the opportunity solution tree."
+    source: "Torres 2021, Ch.2 p.26"
+    grounding: verbatim
+
+  opportunity_solution_tree:
+    term: "Opportunity Solution Tree (OST)"
+    definition: "A simple way of visually representing the paths you might take to reach a desired outcome. Four layers: desired outcome (root), opportunity space, solution space, assumption tests."
+    source: "Torres 2021, Ch.2 pp.26–27"
+    grounding: verbatim
+
+  continuous_discovery:
+    term: "Continuous discovery"
+    definition: "At a minimum, weekly touchpoints with customers by the team building the product where they conduct small research activities in pursuit of a desired outcome."
+    source: "Torres 2021, Ch.1 p.20"
+    grounding: verbatim
+
+  outcome_oriented_mindset:
+    term: "Outcome-oriented mindset"
+    definition: "Start thinking in outcomes rather than outputs. Define success as the value that code creates for your customers and for your business, not by the code that you ship."
+    source: "Torres 2021, Ch.1 p.18"
+    grounding: verbatim
+
+  parent_child_relationship:
+    term: "Parent-child relationship (in OST)"
+    definition: "A child opportunity (or sub-opportunity) is a subset of a parent opportunity. Used to deconstruct large intractable opportunities into smaller more solvable sub-opportunities."
+    source: "Torres 2021, Ch.6 p.83"
+    grounding: verbatim
+
+  sibling_relationship:
+    term: "Sibling relationship (in OST)"
+    definition: "Siblings should be similar to each other—in that they are each a subset of the same parent—but distinct in that you can address one without addressing another."
+    source: "Torres 2021, Ch.6 p.84"
+    grounding: verbatim
+
+  leaf_node_opportunity:
+    term: "Leaf-node opportunity"
+    definition: "An opportunity that has no children. Always choose a leaf-node opportunity as the target because the goal is to deliver iterative value over time by solving a series of smaller opportunities in succession."
+    source: "Torres 2021, Ch.7 p.98"
+    grounding: verbatim
+
+ost_structure:
+  layers:
+    - layer: root
+      description: "Desired outcome—the business need"
+    - layer: opportunity_space
+      description: "Customer needs, pain points, and desires"
+    - layer: solution_space
+      description: "Solutions being explored"
+    - layer: assumption_tests
+      description: "Evaluating which solutions create customer value driving business value"
+  source: "Torres 2021, Ch.2 pp.26–27"
+
+assessment_criteria:
+  name: "Four criteria for assessing opportunities"
+  members:
+    - criterion: opportunity_sizing
+      question: "How many customers are affected and how often?"
+    - criterion: market_factors
+      question: "How might addressing each opportunity affect our position in the market?"
+    - criterion: company_factors
+      question: "What is the strategic impact for our company, business group, or team?"
+    - criterion: customer_factors
+      question: "How important is each opportunity to customers? How satisfied are they with existing solutions?"
+  method: "Compare and contrast sibling opportunities against each other using relative judgments. Do not score and stack-rank."
+  source: "Torres 2021, Ch.7 pp.99–101"
+
+six_mindsets:
+  members: [outcome_oriented, customer_centric, collaborative, visual, experimental, continuous]
+  source: "Torres 2021, Ch.1 pp.18–20"
+
+anti_patterns:
+  - pattern: "Starting with an outcome and immediately generating ideas"
+    diagnosis: "Skips opportunity mapping and structuring. The right problem framing helps ensure better solutions. Start by discovering and mapping the opportunity space first."
+    source: "Torres 2021, Ch.2 p.25"
+
+  - pattern: "Prioritizing features instead of opportunities"
+    diagnosis: "Product strategy doesn't happen in the solution space. Customers care about solving their needs, not about feature releases. This is the build trap."
+    source: "Torres 2021, Ch.7 p.97"
+
+  - pattern: "Managing opportunities as a flat backlog"
+    diagnosis: "Hard to prioritize opportunities of different shapes and sizes. Some are interrelated; others are subsets. Use the tree structure to visualize complexity."
+    source: "Torres 2021, Ch.6 pp.82–83"
+
+  - pattern: "Scoring and stack-ranking opportunities"
+    diagnosis: "This is a messy subjective decision. Make data-informed relative comparisons between siblings instead. Scoring is rife with assumptions and won't lead to better decisions."
+    source: "Torres 2021, Ch.7 p.101"
+
+  - pattern: "Asking whether-or-not questions about opportunities"
+    diagnosis: "Leads to confirmation bias and forgets opportunity cost. Compare and contrast sibling opportunities against each other instead."
+    source: "Torres 2021, Ch.7 p.99"
+
+  - pattern: "Working on multiple opportunities simultaneously"
+    diagnosis: "Spreads the team too thin; returns to waterfall mindset. Address one leaf-node opportunity at a time to deliver iterative value."
+    source: "Torres 2021, Ch.7 p.98"
+
+  - pattern: "Overlapping sibling opportunities"
+    diagnosis: "Prevents working on one opportunity at a time. If there is overlap, the tree needs more structure. Organize by distinct moments in time."
+    source: "Torres 2021, Ch.6 p.87"
+
+deprecated: []

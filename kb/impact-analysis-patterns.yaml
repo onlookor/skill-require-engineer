@@ -1,0 +1,130 @@
+---
+# Impact Analysis Patterns Knowledge Base
+# Grounding: L1 verbatim from Wiegers & Beatty (2013) Software Requirements 3rd Ed. Ch.28-29
+module: impact-analysis-patterns
+schema_version: 1
+---
+
+# Canonical term definitions (closed vocabulary — no drift allowed)
+
+canonical_terms:
+  change_control_board:
+    term: "Change Control Board (CCB)"
+    definition: "The body of people—whether it is one individual or a diverse group—that decides which proposed changes and new requirements to accept, which to accept with revisions, and which to reject."
+    source: "Wiegers & Beatty 2013, Ch.28, p.480"
+    grounding: verbatim
+
+  ccb_roles:
+    term: "CCB roles"
+    definition: "Seven defined roles in change management: CCB Chair, CCB, Evaluator, Modifier, Originator, Request Receiver, Verifier."
+    members: [ccb_chair, ccb, evaluator, modifier, originator, request_receiver, verifier]
+    source: "Wiegers & Beatty 2013, Ch.28, p.476, Table 28-1"
+    grounding: verbatim
+
+  impact_analysis:
+    term: "Impact analysis"
+    definition: "A key aspect of responsible requirements management that provides an accurate understanding of the implications of a proposed change, which helps the team make informed business decisions about which proposals to approve."
+    three_steps:
+      - "Understand the possible implications of making the change."
+      - "Identify all the requirements, files, models, and documents that might have to be modified."
+      - "Identify the tasks required to implement the change, and estimate the effort needed to complete those tasks."
+    source: "Wiegers & Beatty 2013, Ch.28, pp.484-485"
+    grounding: verbatim
+
+  no_free_changes:
+    term: "No free changes principle"
+    definition: "Change always has a price. Ignoring the price doesn't alter the fact that change is not free."
+    source: "Wiegers & Beatty 2013, Ch.28, p.472-473"
+    grounding: verbatim
+
+  scope_creep:
+    term: "Scope creep"
+    definition: "The project continuously incorporates more functionality without adjusting resources, schedules, or quality goals. The problem is not that requirements change but that late changes can have a big impact on work already performed."
+    source: "Wiegers & Beatty 2013, Ch.28, p.473"
+    grounding: verbatim
+
+  traceability_enables_impact:
+    term: "Traceability enables impact analysis"
+    definition: "Trace information facilitates impact analysis by helping you identify all the work products you might have to modify to implement a proposed requirement change. Without trace information, there's a good chance that you'll overlook a system element that would be affected."
+    source: "Wiegers & Beatty 2013, Ch.29, pp.491-494"
+    grounding: verbatim
+
+# Change control process structure (machine-usable)
+
+change_control_process:
+  entry_criteria:
+    - "A change request with all the necessary information has been received through an approved channel."
+  tasks:
+    - step: 1
+      name: "Evaluate change request"
+      responsible: "Evaluator (assigned by CCB Chair)"
+      description: "Evaluate for technical feasibility, cost, alignment with business requirements, and resource constraints. Perform impact analysis."
+    - step: 2
+      name: "Make change decision"
+      responsible: "CCB"
+      description: "Decide to approve or reject. Assign priority or target implementation date. Update status and notify affected team members."
+    - step: 3
+      name: "Implement the change"
+      responsible: "Modifier"
+      description: "Update affected work products. Use requirements trace information to find all parts the change touches."
+    - step: 4
+      name: "Verify the change"
+      responsible: "Verifier"
+      description: "Peer review to ensure modified deliverables correctly address all aspects. Store updated work products."
+  exit_criteria:
+    - "The status of the request is Rejected, Closed, or Canceled."
+    - "All modified work products are updated and stored in the correct locations."
+    - "The relevant stakeholders have been notified of the change details and the status of the change request."
+  source: "Wiegers & Beatty 2013, Ch.28, pp.475-478"
+
+impact_analysis_procedure:
+  estimation_steps:
+    - step: 1
+      action: "Work through the implications checklist (Figure 28-5)"
+    - step: 2
+      action: "Work through the affected-work-products checklist (Figure 28-6); RM tools can follow traceability links"
+    - step: 3
+      action: "Use the effort estimation worksheet (Figure 28-7) to estimate effort for anticipated tasks"
+    - step: 4
+      action: "Sum the effort estimates"
+    - step: 5
+      action: "Identify the sequence in which tasks must be performed and how they interleave with planned tasks"
+    - step: 6
+      action: "Estimate the impact on the project's schedule and cost"
+    - step: 7
+      action: "Evaluate the change's priority compared to other pending requirements"
+    - step: 8
+      action: "Report the impact analysis results to the CCB"
+  typical_duration: "Shouldn't take more than a couple of hours for a single change request"
+  source: "Wiegers & Beatty 2013, Ch.28, pp.485-486"
+
+change_control_policy_statements:
+  - "All changes must follow the process. If a change request is not submitted in accordance with this process, it will not be considered."
+  - "No design or implementation work other than feasibility exploration will be performed on unapproved changes."
+  - "Simply requesting a change does not guarantee that it will be made. The project's change control board (CCB) will decide which changes to implement."
+  - "The contents of the change database must be visible to all project stakeholders."
+  - "Impact analysis must be performed for every change."
+  source: "Wiegers & Beatty 2013, Ch.28, p.473"
+
+# Anti-patterns (error modes + diagnostics)
+
+anti_patterns:
+  - pattern: "Skipping impact analysis"
+    diagnostic: "Skipping impact analysis doesn't change the size of the task. It just turns the size into a surprise. Software surprises are rarely good news."
+    source: "Wiegers & Beatty 2013, Ch.28, p.485"
+
+  - pattern: "Subversive changes (bypassing the process)"
+    diagnostic: "When developers who want to be accommodating agree to add enhancements that users request, requirements changes slip in through the back door instead of being approved by the right stakeholders."
+    source: "Wiegers & Beatty 2013, Ch.28, p.471"
+
+  - pattern: "Saying yes to everything"
+    diagnostic: "Because people don't like to say 'no,' it's easy to accumulate a huge backlog of approved change requests that will never get done."
+    source: "Wiegers & Beatty 2013, Ch.28, p.481"
+
+  - pattern: "Impact analysis without traceability"
+    diagnostic: "Without trace information, there's a good chance that you'll overlook a system element that would be affected if you add, delete, or modify a particular requirement."
+    source: "Wiegers & Beatty 2013, Ch.29, p.494"
+
+  - pattern: "Single-person impact estimation for substantial changes"
+    diagnostic: "For substantial changes, use a small team—not just one developer—to do the analysis and effort estimation to avoid overlooking important tasks."
+    source: "Wiegers & Beatty 2013, Ch.28, p.485"

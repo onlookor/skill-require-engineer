@@ -1,0 +1,87 @@
+---
+# Ambiguous Words Blacklist
+# Deterministic validator for the Ambiguity Intolerance invariant (SKILL.md §4.4)
+# Split out from validators/ears_regex.yaml; superset merged with Martinelli hedging words.
+#
+# Grounding:
+#   L1: base list derived from EARS paper problem types "Ambiguity" and "Vagueness"
+#       (Mavin et al. 2009, Section 2) — see kb/ears-patterns.yaml.
+#   L1: hedging words verbatim from Martinelli (2025) Ch.4 p.68:
+#       "Words such as 'normally,' 'quickly,' 'usually,' 'if possible,' 'as needed,'
+#        and sometimes even 'should' often hide decisions that have not yet been made."
+
+module: ambiguous-words
+purpose: "Word-level blacklist for ambiguity and vagueness detection. Any requirement containing one of these terms without an attached measurable replacement fails the Ambiguity Intolerance check."
+grounding: verbatim
+sources:
+  - "Mavin, A., Wilkinson, P., Harwood, A., & Novak, M. (2009). EARS. IEEE RE 2009. Section 2."
+  - "Martinelli, S. (2025). Spec-Driven Development. Apress. Ch.4, p.68."
+used_by:
+  - "../stages/s3-analysis.md (EARS conversion quality scan)"
+  - "../stages/s5-validation.md (quality assessment)"
+companion: "../methods/specification-quality.md §7.1"
+
+# Categories:
+#   speed           - unquantified rate
+#   time            - unquantified timing
+#   quantity        - unquantified amount/degree
+#   quality_judgement - subjective quality with no acceptance criterion
+#   hedging         - hides a decision that has not yet been made
+
+words:
+  # --- speed ---
+  - {term: "fast", category: speed, replacement_hint: "state a measurable threshold, e.g. 'completes within 2 seconds'"}
+  - {term: "quickly", category: speed, replacement_hint: "state a measurable threshold with unit"}
+  - {term: "rapidly", category: speed, replacement_hint: "state a measurable threshold with unit"}
+  - {term: "promptly", category: speed, replacement_hint: "state a measurable threshold with unit"}
+
+  # --- time ---
+  - {term: "soon", category: time, replacement_hint: "state a deadline or duration"}
+  - {term: "timely", category: time, replacement_hint: "state the maximum allowed latency"}
+  - {term: "as soon as possible", category: time, replacement_hint: "state a concrete maximum delay"}
+  - {term: "within a reasonable time", category: time, replacement_hint: "replace 'reasonable' with a measured bound"}
+
+  # --- quantity ---
+  - {term: "approximately", category: quantity, replacement_hint: "state exact value or an explicit tolerance"}
+  - {term: "about", category: quantity, replacement_hint: "state exact value or an explicit tolerance"}
+  - {term: "around", category: quantity, replacement_hint: "state exact value or an explicit tolerance"}
+  - {term: "roughly", category: quantity, replacement_hint: "state exact value or an explicit tolerance"}
+  - {term: "towards", category: quantity, replacement_hint: "state the target value and the deadline"}
+  - {term: "relatively", category: quantity, replacement_hint: "state the comparison baseline and the delta"}
+  - {term: "considerably", category: quantity, replacement_hint: "state a percentage or absolute delta"}
+  - {term: "significantly", category: quantity, replacement_hint: "state a percentage or absolute delta"}
+  - {term: "adequate", category: quantity, replacement_hint: "state the minimum acceptable level"}
+  - {term: "sufficient", category: quantity, replacement_hint: "state the minimum acceptable level"}
+
+  # --- quality_judgement ---
+  - {term: "user-friendly", category: quality_judgement, replacement_hint: "state observable usability criteria or link to a usability NFR with metrics"}
+  - {term: "user-friendly interface", category: quality_judgement, replacement_hint: "state observable usability criteria with metrics"}
+  - {term: "intuitive", category: quality_judgement, replacement_hint: "state measurable task-completion criteria"}
+  - {term: "easy to use", category: quality_judgement, replacement_hint: "state measurable task-completion criteria"}
+  - {term: "efficient", category: quality_judgement, replacement_hint: "state the resource or time bound that defines efficiency"}
+  - {term: "appropriate", category: quality_judgement, replacement_hint: "state the observable result, e.g. 'an error message is shown and no change is persisted' (Martinelli p.68)"}
+  - {term: "reasonable", category: quality_judgement, replacement_hint: "state the decision criterion explicitly"}
+  - {term: "modern", category: quality_judgement, replacement_hint: "not a requirement property; delete or restate as a dated constraint with authority"}
+  - {term: "robust", category: quality_judgement, replacement_hint: "enumerate the failure conditions and required recovery behaviour (Unwanted-behaviour EARS)"}
+  - {term: "reliable", category: quality_judgement, replacement_hint: "state availability/MTBF target, e.g. '>= 99.9% monthly availability'"}
+  - {term: "scalable", category: quality_judgement, replacement_hint: "state the load growth the system must absorb and the quality level to maintain"}
+  - {term: "flexible", category: quality_judgement, replacement_hint: "state the specific variations that must be supported"}
+
+  # --- hedging (Martinelli 2025, Ch.4 p.68) ---
+  - {term: "normally", category: hedging, replacement_hint: "enumerate when the stated behaviour does NOT apply"}
+  - {term: "usually", category: hedging, replacement_hint: "enumerate the exceptions explicitly"}
+  - {term: "if possible", category: hedging, replacement_hint: "state the decision: is the behaviour required or not?"}
+  - {term: "as needed", category: hedging, replacement_hint: "state who decides the need and by what criterion"}
+
+special_cases:
+  - term: "should"
+    note: >
+      Banned when it hides a decision that has not yet been made (Martinelli p.68:
+      "sometimes even 'should' often hide decisions"). NOT banned in optional-feature
+      context or when recording a stakeholder quote verbatim; in EARS output prefer
+      'shall' for mandatory behaviour.
+
+enforcement:
+  - "Case-insensitive word-boundary match."
+  - "A match produces a Blocking finding unless the term appears inside a quoted stakeholder statement or an explicitly flagged assumption."
+  - "Every match must be accompanied by either a replacement implementing the replacement_hint, or an explicit waiver with rationale recorded in open_questions."

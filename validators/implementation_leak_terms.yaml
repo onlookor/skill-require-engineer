@@ -1,0 +1,95 @@
+---
+# Implementation Leak Terms Blacklist
+# Deterministic validator for the Implementation Independence invariant (SKILL.md §4.1).
+# Split out from validators/ears_regex.yaml; enriched with categories and rewrite hints.
+#
+# Grounding:
+#   L1: base list derived from EARS paper problem #7 "Inappropriate implementation"
+#       (Mavin et al. 2009, Section 2) — see kb/ears-patterns.yaml.
+#   L1: observable-behavior anti-examples verbatim from Martinelli (2025) Ch.4 pp.66-67:
+#       "It should not describe internal implementation details such as:
+#        the database transaction is opened; a repository method is called;
+#        a message is published internally; the UI framework refreshes a component tree."
+#   Derived rows reference the abstraction rewrite table in
+#   kb/implementation-neutrality-patterns.yaml (Robertson et al. 2024, Ch.16).
+
+module: implementation-leak-terms
+purpose: "Term-level blacklist for implementation-leak detection. Any requirement artifact containing one of these terms is flagged [IMPLEMENTATION LEAK] and must be abstracted or moved to constraints."
+grounding: mixed
+sources:
+  - "Mavin, A., et al. (2009). EARS. IEEE RE 2009. Section 2 (problem #7: Inappropriate implementation)."
+  - "Martinelli, S. (2025). Spec-Driven Development. Apress. Ch.4 pp.66-67 (observable behavior)."
+enforcement_ref: "../methods/implementation-neutrality.md §6"
+companion: "../kb/implementation-neutrality-patterns.yaml"
+
+# Categories:
+#   data_storage      - persistence technology
+#   protocol          - communication/transport technology
+#   ui_mechanism      - presentation-layer artifacts
+#   language_framework- programming languages and frameworks
+#   platform          - cloud platforms and deployment tech
+#   architecture_part - architectural components named as requirements subjects
+
+terms:
+  # --- data_storage ---
+  - {term: "database", category: data_storage, essential_rewrite: "the business retains <record>"}
+  - {term: "table", category: data_storage, essential_rewrite: "the business retains <record>"}
+  - {term: "column", category: data_storage, essential_rewrite: "<information item> is retained"}
+  - {term: "field", category: data_storage, essential_rewrite: "<information item> is provided"}
+
+  # --- protocol ---
+  - {term: "API", category: protocol, essential_rewrite: "<external party> requests <business service>"}
+  - {term: "endpoint", category: protocol, essential_rewrite: "<external party> requests <business service>"}
+  - {term: "REST", category: protocol, essential_rewrite: ""}
+  - {term: "JSON", category: protocol, essential_rewrite: ""}
+  - {term: "XML", category: protocol, essential_rewrite: ""}
+  - {term: "HTTP", category: protocol, essential_rewrite: "the business confirms/refuses <action>"}
+  - {term: "TCP/IP", category: protocol, essential_rewrite: ""}
+  - {term: "socket", category: protocol, essential_rewrite: ""}
+  - {term: "server", category: protocol, essential_rewrite: "<business capability>"}
+  - {term: "client", category: protocol, essential_rewrite: "<actor>"}
+  - {term: "browser", category: protocol, essential_rewrite: "<actor>"}
+
+  # --- ui_mechanism ---
+  - {term: "button", category: ui_mechanism, essential_rewrite: "<actor> initiates <business action>"}
+  - {term: "page", category: ui_mechanism, essential_rewrite: "<actor> is informed of <information>"}
+  - {term: "screen", category: ui_mechanism, essential_rewrite: "<actor> is informed of <information>"}
+  - {term: "form", category: ui_mechanism, essential_rewrite: "<actor> provides <information>"}
+  - {term: "input field", category: ui_mechanism, essential_rewrite: "<actor> provides <information>"}
+  - {term: "dropdown", category: ui_mechanism, essential_rewrite: "<actor> selects <option>"}
+  - {term: "checkbox", category: ui_mechanism, essential_rewrite: "<actor> confirms <choice>"}
+
+  # --- language_framework ---
+  - {term: "Python", category: language_framework, essential_rewrite: ""}
+  - {term: "Java", category: language_framework, essential_rewrite: ""}
+  - {term: "JavaScript", category: language_framework, essential_rewrite: ""}
+  - {term: "SQL", category: language_framework, essential_rewrite: ""}
+  - {term: "MySQL", category: language_framework, essential_rewrite: ""}
+  - {term: "PostgreSQL", category: language_framework, essential_rewrite: ""}
+  - {term: "MongoDB", category: language_framework, essential_rewrite: ""}
+  - {term: "Redis", category: language_framework, essential_rewrite: ""}
+  - {term: "Spring Boot", category: language_framework, essential_rewrite: ""}
+  - {term: "Django", category: language_framework, essential_rewrite: ""}
+  - {term: "React", category: language_framework, essential_rewrite: ""}
+  - {term: "Angular", category: language_framework, essential_rewrite: ""}
+  - {term: "Vue.js", category: language_framework, essential_rewrite: ""}
+
+  # --- platform ---
+  - {term: "Kubernetes", category: platform, essential_rewrite: ""}
+  - {term: "Docker", category: platform, essential_rewrite: ""}
+  - {term: "AWS", category: platform, essential_rewrite: ""}
+  - {term: "Azure", category: platform, essential_rewrite: ""}
+
+  # --- architecture_part (Martinelli Ch.4 pp.66-67 anti-examples) ---
+  - {term: "database transaction", category: architecture_part, essential_rewrite: "the business change is recorded"}
+  - {term: "repository method", category: architecture_part, essential_rewrite: ""}
+  - {term: "component tree", category: architecture_part, essential_rewrite: ""}
+
+exceptions:
+  - "Technology mandated by an authority (regulator, customer contract, corporate standard) is recorded as a CONSTRAINT with rationale and source authority — never as a functional requirement. See ../methods/implementation-neutrality.md §7."
+  - "Existing-world technology stated in world properties W (e.g. 'the current payroll system runs batch jobs nightly') belongs in the problem statement and is allowed. See ../methods/problem-statement.md §3."
+
+enforcement:
+  - "Case-insensitive word-boundary match, except platform/framework names matched case-sensitively to reduce false positives (e.g. 'java' in 'JavaScript' is not double-counted)."
+  - "A match produces a Blocking finding with the suggested essential_rewrite."
+  - "After rewrite, the statement must pass the technology-swap test (../methods/implementation-neutrality.md §6.3)."

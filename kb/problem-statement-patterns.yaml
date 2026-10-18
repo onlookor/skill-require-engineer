@@ -1,0 +1,162 @@
+---
+# Problem Frames Knowledge Base
+# Grounding: L1 verbatim from Jackson (2005) "Problem frames and software engineering",
+#            Information and Software Technology 47, 903-912 (jackson1.md)
+#            + Hall, Rapanotti, Jackson (2005) "Problem frame semantics for software development" (jackson2.md)
+#            L2 structural (marked below, needs_review) for frames not defined verbatim in sources.
+module: problem-statement-patterns
+schema_version: 1
+---
+
+# Canonical term definitions (closed vocabulary)
+
+canonical_terms:
+
+  machine:
+    definition: "The artifice to be designed and constructed — software executed on a general-purpose computer, specialised to serve a particular purpose."
+    source: "jackson1.md §2 p.904"
+    grounding: L1
+
+  problem_world:
+    definition: "The part of the world to be transformed, in which the requirement is located."
+    source: "jackson1.md §2 p.904"
+    grounding: L1
+
+  requirement:
+    definition: "A predicate or condition on the problem world that the machine is required to bring about. Not a tangible part of the problem."
+    source: "jackson1.md §2 p.905"
+    grounding: L1
+    note: "The requirement refers to requirement phenomena b — what the customer observes to judge satisfaction."
+
+  specification:
+    definition: "Description, in terms of the specification phenomena a, of the machine behaviour that must result from execution of the software to be developed."
+    source: "jackson1.md §3 p.905"
+    grounding: L1
+
+  world_properties:
+    definition: "The given properties of the problem world that hold independently of the machine's behaviour and govern the possible relationships between specification and requirement phenomena."
+    source: "jackson1.md §3 p.905"
+    grounding: L1
+
+  entailment:
+    notation: "S; W ⊢ R"
+    reading: "If a machine satisfying S is installed in a problem world satisfying W, then the requirement R will be satisfied."
+    source: "jackson1.md §3 p.905"
+    grounding: L1
+
+  requirement_phenomena_b:
+    definition: "Physical phenomena of the problem world referenced by the requirement; what the customer observes to determine satisfaction."
+    source: "jackson1.md §2 p.905"
+    grounding: L1
+
+  specification_phenomena_a:
+    definition: "The shared phenomena at the machine/problem-world interface in terms of which the machine's external behaviour is specified."
+    source: "jackson1.md §2 p.905"
+    grounding: L1
+
+  domain_characterisation:
+    members:
+      causal: "domain obeys physical cause-effect laws (e.g. a Controlled Domain)"
+      lexical: "domain is a repository of data/text that can be edited (e.g. a WorkPiece)"
+      biddable: "domain is a human/agent whose behaviour can be requested but not forced (e.g. a User)"
+    source: "jackson1.md §6 p.907"
+    grounding: L1
+
+# Elementary problem frames
+
+frames:
+
+  workpieces:
+    id: workpieces
+    definition: "A User edits a WorkPiece such as a text or graphic document. The requirement is that the edit commands issued by the User should effect appropriate corresponding changes in the WorkPiece."
+    domains:
+      - {name: User, characterisation: biddable}
+      - {name: Tool Machine}
+      - {name: WorkPiece, characterisation: lexical}
+    grounding: L1
+    source: "jackson1.md §6 p.907 (verbatim)"
+
+  required_behaviour:
+    id: required_behaviour
+    definition: "The Control Machine is required to impose a particular behaviour on a Controlled Domain."
+    domains:
+      - {name: Control Machine}
+      - {name: Controlled Domain, characterisation: causal}
+    grounding: L1
+    source: "jackson1.md §6 p.907 (verbatim)"
+
+  information_display:
+    id: information_display
+    definition: "The Information Machine is required to monitor the state and behaviour of a Real World and to display information about it on a Display."
+    requirement_form: "the visible phenomena of the Display should correspond in a certain way to the state of the Real World"
+    domains:
+      - {name: Real World, characterisation: causal}
+      - {name: Information Machine}
+      - {name: Display}
+    decomposition: "With information deficit, split into two subproblems via an invented lexical Model domain (e.g. a database): maintain Model≈Real World, and Display≈Model; relational composition should equal Display≈Real World."
+    grounding: L1
+    source: "jackson1.md §6-7 pp.907-908 (verbatim)"
+
+  commanded_behaviour:
+    id: commanded_behaviour
+    definition: "The machine in a commanded behaviour problem must ensure that actions commanded by the operator are properly executed; commands appear as events, and the link between a command and the commanded action in the controlled subdomain is peculiar to commanded behaviour problems."
+    definition_zh_verbatim: "指令行为问题中的机器必须保证操作员命令的动作被适当地执行。命令是作为事件出现的，而命令与受控子领域中被命令的动作之间的联系是指令行为问题所独有的。"
+    example_zh_verbatim: "售货机是一个好的例子：投入一枚硬币命令售货机分发一份糖果；如果命令被接受，售货机必须保证这个命令被执行。"
+    domains:
+      - {name: Operator, characterisation: biddable}
+      - {name: Control Machine}
+      - {name: Controlled Domain, characterisation: causal}
+    grounding: L1
+    source: >
+      Jackson (2001) Problem Frames, Chinese translation (Jin Zhi et al., China Machine
+      Press 2005), §4.1.2, printed p.62 — image-only scan read via page images.
+      English cross-check: jackson2.md p.197 Fig.8.
+
+  transformation:
+    id: transformation
+    definition: "In a transformation problem the requirement describes the relation between input files and output files; the computer must read the input files and produce the output files."
+    definition_zh_verbatim: "在转换问题中，需求描述输入文件与输出文件之间的关系。计算机必须读入输入文件，产生输出文件。"
+    example_zh_verbatim: "例如，工资单处理、编译等问题属于转换问题。"
+    domains:
+      - {name: Input File, characterisation: lexical}
+      - {name: Computer}
+      - {name: Output File, characterisation: lexical}
+    grounding: L1
+    corroborated_by: "jackson1.md p.908 verbatim: 'problems fitting the Transformation frame, in which the task is to produce sequential output streams from sequential input streams'"
+    source: >
+      Jackson (2001) Problem Frames, Chinese translation (Jin Zhi et al., China Machine
+      Press 2005), §4.1.2, printed p.62 — image-only scan read via page images.
+
+# Problem pattern stipulations (what a frame fixes)
+
+problem_pattern_stipulates:
+  - "a decomposition of the problem world into a particular set of physical problem domains interacting with each other and with the machine in a particular topology"
+  - "a characterisation of each problem domain according to its physical properties — causal, lexical or biddable"
+  - "a characterisation of each interface according to the types of the subsets of the phenomena — events, states, symbols — shared at the interface and the assignment of control of each subset to one of the sharing domains"
+  - "the nature of the requirement and of its link — none, reference only, or constraining — to each problem domain"
+source: "jackson1.md §6 p.907"
+grounding: L1
+
+# Composition rules
+
+composition:
+  model_domain_rule: "Introducing the Model domain is an unavoidable, and necessarily universal, practice in software development. The Model is part of the machine's construction (S), not of the problem world (W); requirements must stay with phenomena b."
+  relational_composition: "Display ≈ Model composed with Model ≈ Real World should equal Display ≈ Real World."
+  source: "jackson1.md §7 p.908"
+  grounding: L1
+
+# Anti-patterns enforced by this KB
+
+anti_patterns:
+  - id: machine_before_world
+    symptom: "Problem statement names a technology artifact (portal, app, database) without describing the world transformation."
+    pf_diagnosis: "Machine described before problem world; no phenomena b identified."
+  - id: a_confused_with_b
+    symptom: "Requirements mention screens, tables, APIs."
+    pf_diagnosis: "Specification phenomena a mistaken for requirement phenomena b — implementation leak."
+  - id: missing_world_properties
+    symptom: "Feasibility asserted without stated facts of the problem world."
+    pf_diagnosis: "W is empty or unstated; entailment S; W ⊢ R cannot be evaluated."
+  - id: unbounded_world
+    symptom: "Problem statement like 'improve efficiency' with no delimited domain."
+    pf_diagnosis: "Problem world not decomposed into characterised domains."

@@ -1,0 +1,10 @@
+# DEPRECATED — DO NOT USE
+# The "SPEC-7" quality model does not exist in any source book.
+# Zero occurrences of "SPEC-7"/"SPEC7" in the full text of
+# "Spec-Driven Development From Specs to Code with AI Agents (Simon Martinelli).pdf".
+# This placeholder is superseded by:
+#   kb/specification-quality-patterns.yaml
+# which is grounded verbatim in Martinelli (2025) Ch.3/4/6 and Wiegers & Beatty (2013) Ch.11.
+module: spec7-patterns-deprecated
+status: deprecated
+superseded_by: kb/specification-quality-patterns.yaml

@@ -1,0 +1,174 @@
+---
+# EARS Syntax Validation Regex Patterns
+# Grounding: L1 verbatim from Mavin et al. (2009), IEEE RE 2009
+# These regex patterns are used to validate whether a requirement string
+# conforms to one of the five EARS patterns.
+# Usage: Run each requirement against these patterns. The first match determines the type.
+
+module: ears-regex
+grounding: verbatim
+source: "Derived from EARS generic syntax defined in Mavin et al. (2009), Section 4.1"
+
+# ===================================================================
+# PREPROCESSING STEPS
+# ===================================================================
+preprocessing:
+  - "Strip leading/trailing whitespace"
+  - "Convert to lowercase for pattern matching (but preserve original case in output)"
+  - "Remove trailing period (.) if present"
+  - "Collapse multiple spaces into single space"
+
+# ===================================================================
+# SHARED COMPONENTS
+# ===================================================================
+shared:
+  # The system name must be a noun phrase (no verbs, no prepositions at start)
+  system_name: "[A-Z][a-zA-Z0-9 ]+"
+  # A response is a verb phrase starting with 'shall'
+  shall_response: "shall [A-Za-z][A-Za-z0-9 ,;:(){}\[\].!=<>]+(?:\.)?"
+  # A precondition is an optional clause before the trigger
+  # Examples: "when continuous ignition is commanded by the aircraft", "if the computed airspeed fault flag is set"
+  precondition: "[A-Za-z][A-Za-z0-9 ,;:(){}\[\].!=<>?]+(?:, [A-Za-z][A-Za-z0-9 ,;:(){}\[\].!=<>]+)*"
+  # A trigger is an event description
+  trigger: "[A-Za-z][A-Za-z0-9 ,;:(){}\[\].!=<>?]+(?:, [A-Za-z][A-Za-z0-9 ,;:(){}\[\].!=<>]+)*"
+  # A state description
+  state: "[A-Za-z][A-Za-z0-9 ,;:(){}\[\].!=<>?]+(?:, [A-Za-z][A-Za-z0-9 ,;:(){}\[\].!=<>]+)*"
+  # A feature description
+  feature: "[A-Za-z][A-Za-z0-9 ,;:(){}\[\].!=<>?]+(?:, [A-Za-z][A-Za-z0-9 ,;:(){}\[\].!=<>]+)*"
+
+# ===================================================================
+# PATTERN 1: UBIQUITOUS
+# ===================================================================
+patterns:
+  ubiquitous:
+    id: ubiquitous
+    keyword: "none"
+    # The <system name> shall <system response>
+    # Must start with "The" or a proper noun, followed by system name, then "shall"
+    regex: "^The\s+[A-Za-z][A-Za-z0-9 ]+\s+shall\s+.+"
+    # More flexible: any capitalised noun phrase + shall + response
+    regex_flexible: "^(The\s+)?[A-Z][A-Za-z0-9 ]+\s+shall\s+.+"
+    must_not_contain:
+      - "WHEN"
+      - "IF"
+      - "WHILE"
+      - "DURING"
+      - "WHERE"
+    description: "No preposition keyword. Always active."
+    example_valid: "The Engine Control System shall not cause unacceptable thrust or power oscillations."
+    example_invalid: "When the system starts, the Engine Control System shall initialize."
+
+  # ===================================================================
+  # PATTERN 2: EVENT-DRIVEN
+  # ===================================================================
+  event_driven:
+    id: event_driven
+    keyword: "WHEN"
+    # WHEN <optional preconditions> <trigger> the <system name> shall <system response>
+    regex: "^WHEN(?:\s+[A-Za-z].+?)?\s+the\s+[A-Za-z][A-Za-z0-9 ]+\s+shall\s+.+"
+    # More flexible version
+    regex_flexible: "^WHEN(?:\s+(.+?))?\s+the\s+[A-Z][A-Za-z0-9 ]+\s+shall\s+.+"
+    must_not_contain:
+      - "IF"
+      - "WHILE"
+      - "DURING"
+      - "WHERE"
+    description: "Triggered by an event at the system boundary."
+    example_valid: "When continuous ignition is commanded by the aircraft, the control system shall switch on continuous ignition."
+    example_invalid: "While the aircraft is in-flight, the control system shall maintain fuel flow."
+
+  # ===================================================================
+  # PATTERN 3: UNWANTED BEHAVIOUR
+  # ===================================================================
+  unwanted_behaviour:
+    id: unwanted_behaviour
+    keyword: "IF...THEN"
+    # IF <optional preconditions> <trigger>, THEN the <system name> shall <system response>
+    regex: "^IF(?:\s+[A-Za-z].+?)?\s*,\s*THEN\s+the\s+[A-Za-z][A-Za-z0-9 ]+\s+shall\s+.+"
+    # More flexible version
+    regex_flexible: "^IF(?:\s+(.+?))?\s*,\s*THEN\s+the\s+[A-Z][A-Za-z0-9 ]+\s+shall\s+.+"
+    must_not_contain:
+      - "WHEN"
+      - "WHILE"
+      - "DURING"
+      - "WHERE"
+    description: "Handles failures, disturbances, deviations, unexpected behaviour."
+    example_valid: "If the computed airspeed fault flag is set, then the control system shall use modelled airspeed."
+    example_invalid: "When the fault flag is set, the control system shall use modelled airspeed."
+
+  # ===================================================================
+  # PATTERN 4: STATE-DRIVEN
+  # ===================================================================
+  state_driven:
+    id: state_driven
+    keyword: "WHILE (or DURING)"
+    # WHILE <state> the <system name> shall <system response>
+    # Also: DURING <state> the <system name> shall <system response>
+    regex: "^(?:WHILE|DURING)\s+.+?\s+the\s+[A-Za-z][A-Za-z0-9 ]+\s+shall\s+.+"
+    regex_flexible: "^(?:WHILE|DURING)\s+(.+?)\s+the\s+[A-Z][A-Za-z0-9 ]+\s+shall\s+.+"
+    must_not_contain:
+      - "WHEN"
+      - "IF"
+      - "WHERE"
+    description: "Active while the system is in a defined state."
+    example_valid: "While the aircraft is in-flight, the control system shall maintain engine fuel flow above XXlbs/sec."
+    example_invalid: "When the aircraft is in-flight, the control system shall maintain fuel flow."
+
+  # ===================================================================
+  # PATTERN 5: OPTIONAL FEATURE
+  # ===================================================================
+  optional_feature:
+    id: optional_feature
+    keyword: "WHERE"
+    # WHERE <feature> the <system name> shall <system response>
+    regex: "^WHERE\s+.+?\s+the\s+[A-Za-z][A-Za-z0-9 ]+\s+shall\s+.+"
+    regex_flexible: "^WHERE\s+(.+?)\s+the\s+[A-Z][A-Za-z0-9 ]+\s+shall\s+.+"
+    must_not_contain:
+      - "WHEN"
+      - "IF"
+      - "WHILE"
+      - "DURING"
+    description: "Only applicable when a particular feature is included."
+    example_valid: "Where the control system includes an overspeed protection function, the control system shall test the availability of the overspeed protection function prior to aircraft dispatch."
+    example_invalid: "When the overspeed protection is included, the control system shall test availability."
+
+# ===================================================================
+# COMPLEX COMBINATIONS (Section 4.7)
+# ===================================================================
+complex_patterns:
+  while_when:
+    name: "While + When"
+    regex: "^WHILE\s+.+?\s+,\s*when\s+.+?\s+the\s+[A-Za-z][A-Za-z0-9 ]+\s+shall\s+.+"
+    example: "While the aircraft is on-ground, when reverse thrust is commanded, the control system shall enable deployment of the thrust reverser."
+
+  while_if_then:
+    name: "While + If-Then"
+    regex: "^WHILE\s+.+?\s+,\s*if\s+.+?\s*,\s*THEN\s+the\s+[A-Za-z][A-Za-z0-9 ]+\s+shall\s+.+"
+    example: "While the aircraft is in-flight, if reverse thrust is commanded, then the control system shall inhibit thrust reverser deployment."
+
+  when_if_then:
+    name: "When + If-Then"
+    regex: "^WHEN\s+.+?\s+,\s*if\s+.+?\s*,\s*THEN\s+the\s+[A-Za-z][A-Za-z0-9 ]+\s+shall\s+.+"
+    example: "When selecting idle setting, if aircraft data is unavailable, then the control system shall select Approach Idle."
+
+# ===================================================================
+# BLACKLISTS — MOVED to dedicated validators (single source of truth)
+# ===================================================================
+# Ambiguity / vagueness words:   see validators/ambiguous_words.yaml
+# Implementation leak terms:     see validators/implementation_leak_terms.yaml
+# (Inline lists were split out on 2026-09-01 to prevent wordlist drift.)
+
+# ===================================================================
+# VALIDATION RESULT SCHEMA
+# ===================================================================
+validation_result:
+  requirement_id: "string"
+  requirement_text: "string"
+  pattern_match: "enum[ubiquitous, event_driven, unwanted_behaviour, state_driven, optional_feature, complex, no_match]"
+  matched_pattern_id: "string"
+  system_name: "string"
+  issues:
+    - type: "enum[ambiguous_word, implementation_leak, syntax_error, missing_system_name, missing_response]"
+      message: "string"
+  suggestions:
+    - "string"

@@ -1,0 +1,63 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ReviewReport",
+  "description": "Structured review output for Review Mode (SKILL.md §4.5 Review Integrity). Free-text-only assessments are forbidden; every finding must be structured, and Blocking vs Non-Blocking is decided by methods/specification-quality.md §10.3.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["review_id", "scope", "findings", "summary", "verdict"],
+  "properties": {
+    "review_id": {"type": "string"},
+    "review_date": {"type": "string", "description": "YYYY-MM-DD."},
+    "reviewer": {"type": "string"},
+    "scope": {"type": "string", "description": "Which artifact or requirement set was reviewed."},
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["finding_id", "requirement_id", "category", "severity", "description"],
+        "properties": {
+          "finding_id": {"type": "string"},
+          "requirement_id": {"type": "string"},
+          "category": {
+            "type": "string",
+            "enum": [
+              "syntax_error",
+              "ambiguous_word",
+              "implementation_leak",
+              "untestable",
+              "untraced",
+              "inconsistent",
+              "incomplete",
+              "style"
+            ]
+          },
+          "severity": {
+            "type": "string",
+            "enum": ["blocking", "non_blocking"],
+            "description": "Blocking triggers (specification-quality §10.3): fails unambiguous/correct/consistent/verifiable, implementation_leak_detected, unflagged_tbd_blocking_construction. All others: non_blocking."
+          },
+          "description": {"type": "string"},
+          "evidence": {"type": "string", "description": "The offending text or validator hit that supports this finding."},
+          "suggested_fix": {"type": "string"}
+        }
+      }
+    },
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["total_requirements", "blocking_count", "non_blocking_count", "pass_rate"],
+      "properties": {
+        "total_requirements": {"type": "integer", "minimum": 0},
+        "blocking_count": {"type": "integer", "minimum": 0},
+        "non_blocking_count": {"type": "integer", "minimum": 0},
+        "pass_rate": {"type": "number", "minimum": 0, "maximum": 1}
+      }
+    },
+    "verdict": {
+      "type": "string",
+      "enum": ["pass", "conditional_pass", "fail"],
+      "description": "pass: blocking_count = 0. fail: blocking_count > 0. conditional_pass: all Blocking items carry approved waivers."
+    }
+  }
+}

@@ -1,0 +1,84 @@
+---
+# Specification Quality Patterns Knowledge Base
+# Grounding: L1 verbatim from Martinelli (2025) Spec-Driven Development Ch.3/4/6
+#            + Wiegers & Beatty (2013) Software Requirements 3rd Ed. Ch.11
+# Supersedes: spec7-patterns.yaml (the "SPEC-7" name was fabricated and does not exist in sources)
+module: specification-quality-patterns
+schema_version: 1
+---
+
+# Canonical term definitions (closed vocabulary — no drift allowed)
+
+canonical_terms:
+  individual_requirement_attributes:
+    term: "Attributes of requirement statements"
+    definition: "Qualities each individual business, user, functional, and nonfunctional requirement statement should exhibit."
+    members: [complete, correct, feasible, necessary, prioritized, unambiguous, verifiable]
+    source: "Wiegers & Beatty 2013, Ch.11, pp.203-204"
+
+  collection_attributes:
+    term: "Attributes of requirements collections"
+    definition: "Qualities a set of requirements grouped into a baseline for a specific release or iteration should exhibit."
+    members: [complete, consistent, modifiable, traceable]
+    source: "Wiegers & Beatty 2013, Ch.11, pp.204-205"
+
+  review_gate_outcome:
+    term: "Reviewed requirements set outcome"
+    definition: "A requirements set that is correct and unambiguous; shared and agreed upon; internally consistent; reviewable and version-controlled; safe to use as input for use cases, tests, and AI-driven code generation."
+    source: "Martinelli 2025, Ch.3, p.51"
+
+  executable_specification:
+    term: "Executable specification"
+    definition: "A specification precise enough to drive action, not just understandable enough to read. Does not require formal notation; plain Markdown can suffice."
+    tests:
+      - "If two people read it and imagine different outcomes, it is not executable yet."
+      - "If a tester cannot derive acceptance criteria from it, it is not executable yet."
+      - "If an AI tool must invent missing rules to generate code, it is not executable yet."
+    source: "Martinelli 2025, Ch.4, pp.65-66"
+
+  observable_behavior:
+    term: "Observable behavior"
+    definition: "What an actor does and how the system responds in ways that can be seen, verified, or tested from the outside."
+    litmus_test: "If a statement cannot be verified by observing the system from the outside, it probably does not belong in the use case."
+    source: "Martinelli 2025, Ch.4, pp.66-67"
+
+  hedging_words:
+    term: "Hedging words (ambiguity carriers)"
+    definition: "Words that hide decisions that have not yet been made."
+    members: [normally, quickly, usually, "if possible", "as needed", should]
+    note: "'should' is banned only when it hides an undecided rule; as an EARS optional-feature keyword it remains valid."
+    source: "Martinelli 2025, Ch.4, p.68"
+
+  specification_coverage:
+    term: "Specification coverage"
+    definition: "Which parts of the specification are actually verified (as opposed to traditional code-line coverage). Goal: every main success scenario has a happy-path test; every business rule is asserted somewhere in the suite."
+    axiom: "An uncovered line of code may be acceptable. An uncovered business rule is a gap in the system's protection."
+    source: "Martinelli 2025, Ch.6, pp.112-113"
+
+  one_rule_per_statement:
+    term: "One rule per statement"
+    definition: "A requirement sentence must contain a single decision. Sentences with 'and' or 'or' often hide separate rules that should be written independently."
+    source: "Martinelli 2025, Ch.4, pp.70-71"
+
+# Review-mode verdict vocabulary (used by review_report.json schema)
+
+verdict_vocabulary:
+  severities: [blocking, non_blocking]
+  blocking_triggers:
+    - "fails unambiguous"
+    - "fails correct"
+    - "fails consistent"
+    - "fails verifiable"
+    - "implementation_leak_detected"
+    - "unflagged_tbd_blocking_construction"
+  non_blocking_triggers:
+    - "style_issue"
+    - "missing_priority"
+    - "missing_forward_trace_to_nonexistent_artifact"
+
+# Deprecated terms (rejected — do not use)
+
+deprecated:
+  - term: "SPEC-7"
+    reason: "Fabricated in a prior session; zero occurrences in Martinelli (2025) full text. Replaced by specification-quality module."
+    replaced_by: "specification-quality"

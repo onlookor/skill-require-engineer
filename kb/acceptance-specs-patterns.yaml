@@ -1,0 +1,121 @@
+---
+# Acceptance Specs Patterns Knowledge Base
+# Grounding: L1 verbatim from Adzic (2011) Specification by Example Intro/Ch.2/Ch.8
+#            + Cockburn (2001) Writing Effective Use Cases Ch.1/6/7/8/11
+module: acceptance-specs-patterns
+schema_version: 1
+---
+
+canonical_terms:
+  specification_by_example:
+    term: "Specification by Example"
+    definition: "A set of process patterns where functional requirements, specifications, and acceptance tests are the same thing. Different teams use different names (ATDD, BDD, Story Testing) yet share the same core principles."
+    source: "Adzic 2011, Intro pp.xiii–xiv; Ch.2 p.53"
+    grounding: verbatim
+
+  key_examples:
+    term: "Key examples"
+    definition: "Raw material produced by illustrating using examples. Concise enough to explain context properly; refined into specifications that serve as acceptance criteria, development targets, and future regression tests."
+    source: "Adzic 2011, Intro p.xix; Ch.2 pp.21–22"
+    grounding: verbatim
+
+  refined_specification:
+    term: "Refined specification"
+    definition: "The result of extracting the minimal set of attributes and examples to specify a business rule, adding a title and description. Simultaneously a specification of work, an acceptance test, and a future functional regression test."
+    source: "Adzic 2011, Intro p.xx; Ch.2 p.21"
+    grounding: verbatim
+
+  executable_specification:
+    term: "Executable specification"
+    definition: "An automated Specification with Examples that is comprehensible and accessible to all team members. Unchanged from what it looked like on the whiteboard; not translated into technical commands."
+    source: "Adzic 2011, Ch.2 p.22; Intro p.xxi"
+    grounding: verbatim
+
+  living_documentation:
+    term: "Living documentation"
+    definition: "A source of information about system functionality that is as reliable as programming language code but much easier to access and understand. Allows teams to collaboratively analyze the impact of proposed changes."
+    source: "Adzic 2011, Ch.1 p.30"
+    grounding: verbatim
+
+  given_when_then:
+    term: "Given-When-Then"
+    definition: "A format for specifying system behaviors in three parts: Given a precondition, When an action happens, Then the following post-conditions should be satisfied. A specification should declare the context, specify a single action, and define expected post-conditions."
+    constraint: "Triggering a single action is crucial. Multiple preconditions and postconditions are allowed if directly related to the specified function."
+    pitfall: "Like prose, which often encourages thinking about flows of interactions rather than expressing business functionality directly."
+    source: "Adzic 2011, Ch.8 pp.129–130"
+    grounding: verbatim
+
+  fully_dressed_use_case:
+    term: "Fully dressed use case"
+    definition: "Cockburn's preferred use case style: one column of text, numbered steps, no if statements, extension numbering with digit-letter combinations (e.g., 2a, 2a1)."
+    fields: [name, context_of_use, scope, level, primary_actor, stakeholders_and_interests, precondition, minimal_guarantees, success_guarantees, trigger, main_success_scenario, extensions, technology_data_variations, related_information]
+    source: "Cockburn 2001, Ch.11 pp.119–120"
+    grounding: verbatim
+
+  main_success_scenario:
+    term: "Main success scenario (MSS)"
+    definition: "A top-to-bottom description of one easy-to-understand and fairly typical scenario in which the primary actor's goal is delivered and all stakeholders' interests are satisfied. All other ways to succeed and all failure handling are described in extensions."
+    structure_elements: [condition, goal, action_steps, end_condition, extensions]
+    source: "Cockburn 2001, Ch.7 pp.87–89"
+    grounding: verbatim
+
+  scenario_extension:
+    term: "Scenario extension"
+    definition: "A stripped-down use case that starts with a condition making it relevant, contains action steps under that condition, and ends with delivery or abandonment of the extension goal. Extensions are where the most interesting system requirements reside."
+    source: "Cockburn 2001, Ch.8 pp.99–100"
+    grounding: verbatim
+
+  success_guarantee:
+    term: "Success guarantee"
+    definition: "States what interests of the stakeholders are satisfied after a successful conclusion of the use case. The pass/fail test is that stakeholders agree that if all assertions are true at the end, they are happy."
+    source: "Cockburn 2001, Ch.6 p.84"
+    grounding: verbatim
+
+process_patterns:
+  name: "Seven process patterns of Specification by Example"
+  members:
+    - deriving_scope_from_goals
+    - specifying_collaboratively
+    - illustrating_using_examples
+    - refining_the_specification
+    - automating_validation_without_changing_specifications
+    - validating_frequently
+    - evolving_living_documentation
+  source: "Adzic 2011, Intro pp.xix–xxi; Ch.2 p.53"
+
+bridging_table:
+  dimension: unit_of_verification
+  adzic: "Key example / scenario"
+  cockburn: "Main success scenario + extensions"
+  note: "Formats are complementary: Cockburn provides structural template; Adzic provides Given-When-Then syntax and executability process."
+
+anti_patterns:
+  - pattern: "Separating requirements from acceptance tests"
+    diagnosis: "Creates synchronization issues. With Specification by Example, functional requirements, specifications, and acceptance tests are the same thing."
+    source: "Adzic 2011, Ch.2 p.53"
+
+  - pattern: "Translating specifications into technical automation commands"
+    diagnosis: "Technically automated specifications become inaccessible to business users. An executable specification should be unchanged from what it looked like on the whiteboard."
+    source: "Adzic 2011, Intro p.xxi; Ch.2 p.22"
+
+  - pattern: "Multiple actions in a single When clause"
+    diagnosis: "If a specification lists several actions, a reader will have to analyze how these actions collaborate to produce the final effect. Triggering a single action is crucial."
+    source: "Adzic 2011, Ch.8 p.129"
+
+  - pattern: "Writing if statements inside the main success scenario"
+    diagnosis: "Readers lose track of behavior after just two if branches. Use the MSS + extensions format instead."
+    source: "Cockburn 2001, Ch.8 p.99; Ch.11 p.119"
+
+  - pattern: "Writing every scenario individually from top to bottom"
+    diagnosis: "A maintenance nightmare. Each change to a scenario has to be copied to all other scenarios containing the same text."
+    source: "Cockburn 2001, Ch.8 p.99"
+
+  - pattern: "Skipping extensions because the MSS seems complete"
+    diagnosis: "Extensions are where the most interesting system requirements reside. Failure handling often uses business rules that developers do not know."
+    source: "Cockburn 2001, Ch.8 p.99"
+
+  - pattern: "Treating Given-When-Then as narrative flow"
+    diagnosis: "Encourages thinking about flows of interactions rather than expressing business functionality directly."
+    source: "Adzic 2011, Ch.8 p.130"
+
+deprecated: []

@@ -1,0 +1,201 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "SpecificationArtifact",
+  "description": "S3+S4 output: the complete specification Token ThingRef. Contains the analysis model (S3 sub-step) and the specification document with traceability (S4 sub-step). Produced by requirements_engineer under Rule: raw_requirement -> specification.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["analysis_model", "srs_document", "traceability_matrix", "completeness_check", "baseline_version"],
+  "properties": {
+    "analysis_model": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ears_requirements"],
+      "properties": {
+        "domain_model": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "entities": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["name"],
+                "properties": {
+                  "name": {"type": "string", "description": "Business name only; technical naming is a gate-3 violation."},
+                  "attributes": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": ["name"],
+                      "properties": {
+                        "name": {"type": "string"},
+                        "type": {"type": "string", "description": "Business-level type (e.g. identifier, amount, date), not a programming type."},
+                        "constraints": {"type": "string"}
+                      }
+                    }
+                  },
+                  "relationships": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": ["target", "type"],
+                      "properties": {
+                        "target": {"type": "string"},
+                        "type": {"type": "string"},
+                        "cardinality": {"type": "string"}
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "glossary": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["term", "definition"],
+                "properties": {
+                  "term": {"type": "string"},
+                  "definition": {"type": "string"},
+                  "synonyms": {"type": "array", "items": {"type": "string"}},
+                  "anti_patterns": {"type": "array", "items": {"type": "string"}, "description": "Technical words that must NOT be used for this concept."}
+                }
+              }
+            }
+          }
+        },
+        "state_machines": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["entity", "states"],
+            "properties": {
+              "entity": {"type": "string"},
+              "states": {"type": "array", "items": {"type": "string"}},
+              "transitions": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": ["from", "to"],
+                  "properties": {
+                    "from": {"type": "string"},
+                    "to": {"type": "string"},
+                    "trigger": {"type": "string"},
+                    "guard": {"type": "string", "description": "Must come from elicited material; invented guards are forbidden (s3 Step 3)."},
+                    "action": {"type": "string"}
+                  }
+                }
+              },
+              "exceptions": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": ["state", "exception_type"],
+                  "properties": {
+                    "state": {"type": "string"},
+                    "exception_type": {"type": "string"},
+                    "recovery": {"type": "string"}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "decision_tables": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["rule_set"],
+            "properties": {
+              "rule_set": {"type": "string"},
+              "conditions": {"type": "array", "items": {"type": "string"}},
+              "actions": {"type": "array", "items": {"type": "string"}},
+              "rules": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": ["conditions", "action"],
+                  "properties": {
+                    "conditions": {"type": "array", "items": {"type": "boolean"}},
+                    "action": {"type": "string"}
+                  }
+                }
+              },
+              "conflicts_detected": {"type": "boolean"}
+            }
+          }
+        },
+        "ears_requirements": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "type", "statement", "traces_to_goal", "source_requirement"],
+            "properties": {
+              "id": {"type": "string"},
+              "type": {"type": "string", "enum": ["ubiquitous", "event", "state", "unwanted", "optional"]},
+              "statement": {"type": "string", "description": "Must match exactly one EARS pattern (validators/ears_regex.yaml)."},
+              "rationale": {"type": "string"},
+              "traces_to_goal": {"type": "string"},
+              "source_requirement": {"type": "string", "description": "ID of the originating raw_requirement."}
+            }
+          }
+        },
+        "open_issues": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "srs_document": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["template", "sections"],
+      "properties": {
+        "format": {"type": "string", "enum": ["markdown", "confluence", "pdf"]},
+        "template": {"type": "string", "enum": ["volere", "kiro", "custom"]},
+        "sections": {
+          "type": "object",
+          "description": "Populated Volere 27-section skeleton (or equivalent). Each section: content or explicit N/A with reason (gate-4).",
+          "additionalProperties": true
+        }
+      }
+    },
+    "traceability_matrix": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["business_goal_id"],
+        "properties": {
+          "business_goal_id": {"type": "string"},
+          "user_requirement_ids": {"type": "array", "items": {"type": "string"}},
+          "system_requirement_ids": {"type": "array", "items": {"type": "string"}, "description": "EARS requirement IDs."},
+          "acceptance_spec_ids": {"type": "array", "items": {"type": "string"}, "description": "Filled by S5."},
+          "design_element_ids": {"type": "array", "items": {"type": "string"}, "description": "Reserved for downstream Architecture phase; never guessed by this skill."},
+          "code_element_ids": {"type": "array", "items": {"type": "string"}, "description": "Reserved for downstream Implementation phase; never guessed by this skill."}
+        }
+      }
+    },
+    "completeness_check": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["coverage_percentage"],
+      "properties": {
+        "missing_sections": {"type": "array", "items": {"type": "string"}},
+        "orphan_requirements": {"type": "array", "items": {"type": "string"}},
+        "coverage_percentage": {"type": "number", "minimum": 0, "maximum": 100}
+      }
+    },
+    "baseline_version": {"type": "string", "description": "Semantic version, e.g. v1.0.0; unique in project history."},
+    "baseline_date": {"type": "string", "description": "YYYY-MM-DD."}
+  }
+}

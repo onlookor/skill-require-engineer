@@ -1,0 +1,105 @@
+---
+# Traceability Patterns Knowledge Base
+# Grounding: L1 verbatim from Wiegers & Beatty (2013), Software Requirements 3rd Ed., Ch.29
+module: traceability-patterns
+schema_version: 1
+---
+
+# Canonical term definitions (closed vocabulary)
+
+canonical_terms:
+
+  trace_link:
+    definition: "A recorded dependency or logical link between an individual requirement and another system element (other requirements, business rules, architecture/design components, source code modules, tests, help files)."
+    source: "wiegers.md Ch.29 p.491"
+    grounding: L1
+
+  traceable_vs_traced:
+    definition: "Being traceable (having the properties to facilitate tracing) is not the same as being traced (actually having logical links recorded)."
+    source: "wiegers.md Ch.29 p.491"
+    grounding: L1
+
+  traceability_preconditions:
+    - "each requirement uniquely and persistently labeled"
+    - "requirements written in a fine-grained fashion, not large paragraphs"
+    source: "wiegers.md Ch.29 p.491"
+    grounding: L1
+
+  suspect_link:
+    definition: "A trace link flagged because the object on either end of the link was modified; must be re-verified and cleared manually after consistency is restored."
+    source: "wiegers.md Ch.29 pp.497-498"
+    grounding: L1
+
+  orphan_code:
+    definition: "Functionality with no corresponding written requirement that does not belong in the product (gold-plating); distinguished from legitimately implied requirements."
+    source: "wiegers.md Ch.29 p.492"
+    grounding: L1
+
+# The four link types (Figure 29-1)
+
+link_types:
+  - id: needs_to_requirements_forward
+    from: "customer needs (business objectives, market demands, user requirements)"
+    to: "requirements"
+    use: "tell which requirements are affected if needs change; confidence that all needs addressed"
+  - id: requirements_to_needs_backward
+    from: "requirements"
+    to: "customer needs"
+    use: "identify the origin of each software requirement"
+  - id: requirements_to_elements_forward
+    from: "functional/nonfunctional requirements"
+    to: "design components, code elements"
+    use: "determine every requirement has been satisfied"
+  - id: elements_to_requirements_backward
+    from: "product elements"
+    to: "requirements"
+    use: "know why each element was created"
+source: "wiegers.md Ch.29 pp.491-492 (Figure 29-1, Jarke 1998)"
+grounding: L1
+
+# Matrix formats
+
+matrix_formats:
+  single_matrix:
+    columns: [user_requirement, functional_requirement, design_element, code_element, test]
+    fill_rule: "fill in as work gets done, not as planned; populated cell = completed work"
+    warning: "listing test cases does not indicate tests passed"
+  pairwise_matrices:
+    relationships: ["specifies/is specified by", "is dependent on", "is parent of", "constrains/is constrained by"]
+    source_attribution: "Sommerville and Sawyer 1997, cited p.495"
+  cardinalities:
+    one_to_one: "one design element implemented in one code module"
+    one_to_many: "one functional requirement verified by multiple tests"
+    many_to_many: "complex and difficult to manage in practice"
+  nfr_rule: "NFRs often do not trace directly into code; trace derived functional requirements backward to parent NFR and forward to deliverables"
+source: "wiegers.md Ch.29 pp.494-496"
+grounding: L1
+
+# Audit rules used by stages s5/s6 (derived from motivations, Ch.29 pp.493-494)
+
+audit_rules:
+  missing_requirements:
+    check: "business_goal with no user_requirement, or user_requirement with no system_requirement"
+  unnecessary_requirements:
+    check: "system_requirement (EARS entry) with no upward trace to user/business requirement"
+    consequence: "candidate gold-plating; candidate for removal"
+  unimplemented_requirements:
+    check: "requirement with acceptance spec but no recorded forward link to any downstream artifact"
+  stale_data:
+    check: "requirement reported implemented/verified but trace data incomplete or inaccurate"
+    consequence: "tracing process not working as intended"
+grounding: L1
+source: "wiegers.md Ch.29 pp.493-499"
+
+# Responsibility
+
+responsibility:
+  rule: "trace data collection must be the explicit responsibility of named individuals (typically BA or QA engineer)"
+  source: "wiegers.md Ch.29 p.497"
+  grounding: L1
+
+# Scope boundary for this skill
+
+scope:
+  in_scope: "links business_goal -> user_requirement -> system_requirement(EARS) -> acceptance_spec"
+  out_of_scope: "design_element and code_element columns are reserved for downstream lifecycle phases (Architecture, Implementation); this skill never fills them with guessed content"

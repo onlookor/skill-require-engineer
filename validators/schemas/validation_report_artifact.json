@@ -1,0 +1,75 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ValidationReportArtifact",
+  "description": "S5 output: validation results for a specification. In PACT terms this is the ThingRef of the validation_report Token produced by validator (reads specification via raw_requirement).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["quality_report", "executable_specs", "traceability_audit", "sign_off_status"],
+  "properties": {
+    "quality_report": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["total_requirements", "pass_count", "pass_rate", "defects"],
+      "properties": {
+        "total_requirements": {"type": "integer", "minimum": 0},
+        "pass_count": {"type": "integer", "minimum": 0},
+        "pass_rate": {"type": "number", "minimum": 0, "maximum": 1, "description": "Gate-5 requires >= 0.95."},
+        "defects": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["requirement_id", "category", "severity", "description"],
+            "properties": {
+              "requirement_id": {"type": "string"},
+              "category": {
+                "type": "string",
+                "enum": ["ambiguous", "incomplete", "inconsistent", "untestable", "untraced"]
+              },
+              "severity": {"type": "string", "enum": ["critical", "major", "minor"]},
+              "description": {"type": "string"}
+            }
+          }
+        }
+      }
+    },
+    "executable_specs": {
+      "type": "array",
+      "minItems": 1,
+      "description": "Given-When-Then acceptance specs; every EARS entry must have at least one (gate-5).",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["requirement_id", "given", "when", "then"],
+        "properties": {
+          "requirement_id": {"type": "string"},
+          "given": {"type": "string", "description": "Precondition (business state)."},
+          "when": {"type": "string", "description": "Single action or trigger (Adzic single-action rule)."},
+          "then": {"type": "string", "description": "Observable post-condition; implementation-neutral."},
+          "priority": {"type": "string", "enum": ["must", "should", "could"]}
+        }
+      }
+    },
+    "traceability_audit": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["coverage"],
+      "properties": {
+        "coverage": {"type": "number", "minimum": 0, "maximum": 1, "description": "Gate-5 requires = 1.0."},
+        "orphans": {"type": "array", "items": {"type": "string"}},
+        "broken_links": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "review_checklist": {
+      "type": "string",
+      "description": "Pre-generated human review material covering 100% of requirements."
+    },
+    "sign_off_status": {
+      "type": "string",
+      "enum": ["pending", "approved", "conditionally_approved", "rejected"],
+      "description": "Human-only decision; the agent records but never self-approves."
+    },
+    "sign_off_by": {"type": "array", "items": {"type": "string"}},
+    "sign_off_date": {"type": "string", "description": "YYYY-MM-DD."}
+  }
+}

@@ -1,0 +1,76 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "BusinessGoalArtifact",
+  "description": "S1 output: the seed content of the requirements pipeline. In PACT terms this is the ThingRef of the business_goal Token, seeded only by product_owner (SeedAuthority).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["problem_statement", "business_goals", "stakeholder_map", "scope_boundary"],
+  "properties": {
+    "problem_statement": {
+      "type": "string",
+      "description": "One-sentence problem statement following the S1 template (affected group, situation, current state, quantified pain, desired state, measurable target, supporting business objective)."
+    },
+    "problem_frame_analysis": {
+      "type": "object",
+      "description": "Optional problem-frame analysis per methods/problem-statement.md (machine, problem world, requirement, world properties, frame classification).",
+      "additionalProperties": true
+    },
+    "business_goals": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["goal", "metric", "baseline", "target"],
+        "properties": {
+          "goal": {"type": "string", "description": "Measurable business objective."},
+          "metric": {"type": "string", "description": "Measurement indicator."},
+          "baseline": {"type": "number", "description": "Current baseline value."},
+          "target": {"type": "number", "description": "Target value."},
+          "deadline": {"type": "string", "description": "Expected achievement date (YYYY-MM-DD)."}
+        }
+      }
+    },
+    "stakeholder_map": {
+      "type": "array",
+      "minItems": 3,
+      "description": "Must cover at least three role classes (users, decision makers, affected parties).",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["role", "interest", "influence"],
+        "properties": {
+          "role": {"type": "string"},
+          "interest": {"type": "string", "description": "Core concern of this role."},
+          "influence": {"type": "string", "enum": ["high", "medium", "low"]},
+          "hidden_knowledge": {"type": "string", "description": "Tacit knowledge unique to this role."}
+        }
+      }
+    },
+    "scope_boundary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["in_scope", "out_of_scope"],
+      "properties": {
+        "in_scope": {"type": "array", "items": {"type": "string"}},
+        "out_of_scope": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"type": "string"},
+          "description": "Must be non-empty: a scope that includes everything is no scope at all (gate-1)."
+        },
+        "assumptions": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "success_criteria": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "Stated in business language, never technical language."
+    },
+    "open_questions": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "Questions left for the elicitation stage (S2)."
+    }
+  }
+}

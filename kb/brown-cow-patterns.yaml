@@ -1,0 +1,127 @@
+---
+# Brown Cow Patterns Knowledge Base
+# Grounding: L1 verbatim from Robertson, Robertson & Reed (2024),
+# Mastering the Requirements Process 4th Ed., Chapter 18
+# Source PDF: "Mastering the Requirements Process, 4th Edition - James Robertson & Suzanne Robertson & Adrian Reed (calibre converted).pdf"
+# Parse cache: _parse_cache/robertson.md (lines ~27283-28132)
+
+module: brown-cow-patterns
+grounding: verbatim
+source: "Robertson, J., Robertson, S., & Reed, A. (2024). Mastering the Requirements Process, 4th Edition. Addison-Wesley. Chapter 18."
+
+# ===================================================================
+# MODEL STRUCTURE (Ch.18, p.507, Figure 18.1)
+# ===================================================================
+model:
+  definition: "A way of organizing your thinking; compartmentalizes aspects of the business problem and its solution so everyone is clear what is being discussed."
+  axes:
+    horizontal: "divides What from How"
+    vertical: "divides the current situation (Now) from the proposed solution (Future)"
+  name_origin: "From the phrase 'How now, brown cow?' used in English elocution lessons; How-Now is the first quadrant and gave the model its name."
+
+# ===================================================================
+# THE FOUR VIEWPOINTS
+# ===================================================================
+viewpoints:
+
+  how_now:
+    id: how_now
+    position: "bottom-left"
+    axis_what_how: "How"
+    axis_now_future: "Now"
+    definition: "How things are happening at the moment - the current implementation of your customer's business."
+    contains:
+      - "computers and software (treated as physical things)"
+      - "people and possibly their departments"
+      - "transportation devices, machines"
+    aim: "Establish a baseline; ensure studying the correct part of the business; stakeholders recognize their work."
+    rule: "Do not spend more time than necessary on modeling the How-Now quadrant."
+    page_refs: "pp.508-509"
+
+  what_now:
+    id: what_now
+    position: "top-left"
+    axis_what_how: "What"
+    axis_now_future: "Now"
+    definition: "What the business is doing, and not how it is doing it - the essence of the current problem space."
+    derivation: "Take the How-Now view and abstract it by stripping away all its technological devices."
+    reveals: "underlying business policy and business rules of the current solution"
+    uses:
+      - "A lot of the current essence must be included in any future solution (renewal projects)."
+      - "For renewal projects use minimal How-Now models, only enough to discover the What-Now."
+      - "Starting point for selecting ready-made solutions (OTS, SaaS, open source)."
+    page_refs: "pp.510-511"
+
+  future_what:
+    id: future_what
+    position: "top-right"
+    axis_what_how: "What"
+    axis_now_future: "Future"
+    definition: "The essence to be implemented."
+    status: "THE MOST IMPORTANT QUADRANT OF THE MODEL"
+    risk_if_skipped: "Without seeing the essence of the new business, you risk any future solution not solving the right business problem."
+    derivation: "Moving away from the What-Now view and adding your customer's changes gives you the Future-What."
+    rules:
+      - "Greenfield projects: Future-What is the place to start planning."
+      - "Mandated ready-made solutions are treated as essence and show up in this view."
+      - "Above-the-line thinking: challenge existing policies, work practices, the 'but we've always done it this way' mindset."
+      - "Spending time on the Future-What viewpoint is never time wasted."
+    page_refs: "pp.512-513"
+
+  future_how:
+    id: future_how
+    position: "bottom-right"
+    axis_what_how: "How"
+    axis_now_future: "Future"
+    definition: "The technology and people (and any other devices) you plan to use to bring the essence into the physical world."
+    note: "Overlaps with the work of the solutions architect / enterprise architect."
+    key_quote: "This is the view that is the basis for your detailed requirements."
+    skill_boundary: "Future-How belongs to the Architecture phase downstream; RE artifacts must stay above the line (Future-What)."
+    page_refs: "pp.514-515"
+
+# ===================================================================
+# USAGE RULES (Ch.18, pp.515-518)
+# ===================================================================
+usage:
+  - "Brown Cow is a thinking framework, not a procedure; jump in and out of quadrants as needed."
+  - "Keep the model skeleton visible; tag models/prototypes/scenarios with the view they portray."
+  - "Models optional: a list of business events and their outcomes is often enough as an essential model."
+  - "Prototypes usually take the Future-How view; derive the essence from them."
+
+# ===================================================================
+# PRESUMED SOLUTION PROTOCOL (Ch.18, pp.516-518, Figure 18.3)
+# ===================================================================
+presumed_solution:
+  warning: "Some projects start with the Future-How and never leave it. There is every possibility that this presumed solution is solving the wrong problem."
+  remedy: "Take the proposed solution and extract its essence - reverse engineer it into the Future-What."
+  steps:
+    - "Extract the essence of the presumed solution (reverse engineer into Future-What)."
+    - "Capture the essence with a list of business events and their outcomes."
+    - "Check whether outcomes contribute to the goals established in Project Blastoff."
+    - "Optionally build a context diagram of the proposed solution and compare with the blastoff one."
+    - "Resolve discrepancies in an informed conversation with stakeholders."
+
+# ===================================================================
+# CLASSIFICATION RULES FOR AGENTS (derived, applied in stages s2/s3)
+# ===================================================================
+classification:
+  - signal: "Stakeholder describes current way of working (systems, people, devices)"
+    classify_as: how_now
+    action: "Keep minimal; abstract upward to what_now."
+  - signal: "Stakeholder states a current business rule or policy"
+    classify_as: what_now
+    action: "Record as essence; candidate carry-over to future_what."
+  - signal: "Stakeholder states a desired change or new business capability"
+    classify_as: future_what
+    action: "Elaborate into essential requirements (above the line)."
+  - signal: "Stakeholder demands specific technology/UI/component as the solution"
+    classify_as: future_how
+    action: "Flag as presumed solution; trigger reverse-engineering protocol."
+
+# ===================================================================
+# OPEN ITEMS (for later passes - see PROGRESS.md)
+# ===================================================================
+todo:
+  - "Ch.24 Figure 24.5: trawling techniques per Brown Cow viewpoint (parse_cache ~line 36769) - feed s2-elicitation"
+  - "Ch.30 pp.~916: Brown Cow highlights the transition (scenario-related) - verify before use"
+  - "Glossary entry p.~1210 and p.~1345 ('physical reality...' definition) - cross-check terms"

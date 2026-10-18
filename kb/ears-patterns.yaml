@@ -1,0 +1,209 @@
+---
+# EARS Patterns Knowledge Base
+# Grounding: L1 verbatim from Mavin et al. (2009), IEEE RE 2009
+# Source: Easy_Approach_to_Requirements_Syntax_(EARS).pdf
+
+module: ears-patterns
+grounding: verbatim
+source: "Mavin, A., Wilkinson, P., Harwood, A., & Novak, M. (2009). EARS - Easy Approach to Requirements Syntax. IEEE RE 2009."
+doi: "10.1109/RE.2009.9"
+
+# ===================================================================
+# GENERIC SYNTAX (Section 4.1)
+# ===================================================================
+generic_syntax:
+  template: "<optional preconditions> <optional trigger> the <system name> shall <system response>"
+  ordering_rule: "temporal logic"
+  ordering_description: |
+    1. Preconditions must be satisfied for the requirement to ever be activated.
+    2. Trigger must be true for the requirement to be "fired", but only if preconditions were satisfied.
+    3. System response is required if and only if preconditions and trigger are true.
+
+# ===================================================================
+# FIVE EARS PATTERNS
+# ===================================================================
+patterns:
+
+  # --- Ubiquitous ---
+  ubiquitous:
+    id: ubiquitous
+    keyword: "none (no preposition keyword)"
+    general_form: "The <system name> shall <system response>"
+    has_preconditions: false
+    has_trigger: false
+    has_state: false
+    always_active: true
+    description: |
+      A ubiquitous requirement has no preconditions or trigger. It is not invoked by an event
+      detected at the system boundary or in response to a defined system state, but is always active.
+    examples:
+      - raw: "It must be substantiated by tests, analysis or a combination thereof that the Engine Control System performs the intended functions in a manner which does not create unacceptable thrust or power oscillations."
+      - ears: "The Engine Control System shall not cause unacceptable thrust or power oscillations."
+      - note: "The raw extract was a verification statement; the EARS interpretation is the actual requirement."
+    when_to_use: "System behaviours that are always active, with no triggering event and no conditional state."
+
+  # --- Event-Driven ---
+  event_driven:
+    id: event_driven
+    keyword: "WHEN"
+    general_form: "WHEN <optional preconditions> <trigger> the <system name> shall <system response>"
+    has_preconditions: true
+    has_trigger: true
+    has_state: false
+    always_active: false
+    description: |
+      An event-driven requirement is initiated only when a triggering event is detected at the system boundary.
+    examples:
+      - raw: "It must be demonstrated that, when a Fault or Failure results in a change from one Control Mode to another, or from one channel to another, or from the Primary System to the Back-up System, the change occurs so that the Engine does not exceed any of its operating limitations."
+      - ears: "When the Engine Control System changes operational mode, the Engine Control System shall maintain the engine within approved operational limits."
+    trigger_description: "A detectable event at the system boundary."
+    when_to_use: "System responses triggered by specific events at the system boundary."
+
+  # --- Unwanted Behaviour ---
+  unwanted_behaviour:
+    id: unwanted_behaviour
+    keyword: "IF...THEN"
+    general_form: "IF <optional preconditions> <trigger>, THEN the <system name> shall <system response>"
+    has_preconditions: true
+    has_trigger: true
+    has_state: false
+    always_active: false
+    description: |
+      Requirements to handle unwanted behaviour. "Unwanted behaviour" is a general term used to cover
+      all situations that are undesirable. This includes failures, disturbances, deviations from desired
+      user behaviour and any unexpected behaviour of interacting systems.
+    note: |
+      Unwanted behaviour is a major source of omissions in early requirements, necessitating costly rework.
+      These requirements were given their own syntax so that they could be easily identified throughout the lifecycle.
+    examples:
+      - raw: "Single Failures leading to loss, interruption or corruption of Aircraft-Supplied Data, must not result in a Hazardous Engine Effect for any Engine."
+      - ears: "If a single Failure leads to deficient Aircraft-Supplied Data, then the Engine Control System shall not cause a Hazardous Engine Effect."
+    trigger_description: |
+      An undesirable condition: failure, disturbance, deviation from desired user behaviour,
+      or unexpected behaviour of interacting systems.
+    when_to_use: "Failure handling, fault tolerance, error recovery, and any scenario involving undesirable conditions."
+
+  # --- State-Driven ---
+  state_driven:
+    id: state_driven
+    keyword: "WHILE (or DURING as alternative)"
+    general_form: "WHILE <in a specific state> the <system name> shall <system response>"
+    has_preconditions: false
+    has_trigger: false
+    has_state: true
+    always_active: "yes, while in state"
+    description: |
+      A state-driven requirement is active while the system is in a defined state.
+    examples:
+      - raw: null
+      - ears: "While the aircraft is in-flight, the control system shall maintain engine fuel flow above XXlbs/sec."
+      - note: "The keyword During can be used instead of While for readability: 'During thrust reverser door translation, the control system shall limit thrust to minimum idle.'"
+    state_description: "A well-defined system state."
+    when_to_use: "System behaviours that are active only while the system is in a specific state."
+
+  # --- Optional Feature ---
+  optional_feature:
+    id: optional_feature
+    keyword: "WHERE"
+    general_form: "WHERE <feature is included> the <system name> shall <system response>"
+    has_preconditions: false
+    has_trigger: false
+    has_state: false
+    always_active: "no, only if feature is present"
+    description: |
+      An optional feature requirement is applicable only in systems that include a particular feature.
+    examples:
+      - raw: "When over-speed protection is provided through hydro-mechanical means, it must be demonstrated by test or other acceptable means that the over-speed function remains available between inspection and maintenance periods."
+      - ears: "Where over-speed protection is provided through hydro-mechanical means, the frequency of Engine Control System inspection and maintenance periods shall be consistent with the required availability of the feature."
+    when_to_use: "Configurable or optional features that are not present in all system deployments."
+
+# ===================================================================
+# COMPLEX COMBINATIONS (Section 4.7)
+# ===================================================================
+complex_combinations:
+  - name: "While + When"
+    pattern: "WHILE <state>, WHEN <trigger>, the <system> shall <response>"
+    example: "While the aircraft is on-ground, when reverse thrust is commanded, the control system shall enable deployment of the thrust reverser."
+    description: "The triggering event triggers the system response only when the system is in a particular state."
+
+  - name: "While + If-Then"
+    pattern: "WHILE <state>, IF <unwanted trigger>, THEN the <system> shall <response>"
+    example: "While the aircraft is in-flight, if reverse thrust is commanded, then the control system shall inhibit thrust reverser deployment."
+    description: "The trigger is unwanted whilst in-flight; the response prevents the system from entering an unwanted state."
+
+  - name: "When + If-Then"
+    pattern: "WHEN <trigger>, IF <condition>, THEN the <system> shall <response>"
+    example: "When selecting idle setting, if aircraft data is unavailable, then the control system shall select Approach Idle."
+    description: "The unwanted behaviour should result in the stated response only when the triggering event is satisfied."
+
+# ===================================================================
+# EIGHT NL PROBLEMS (Section 2)
+# ===================================================================
+nl_problems:
+  - id: ambiguity
+    name: "Ambiguity"
+    definition: "A word or phrase has two or more different meanings."
+    forms:
+      - lexical: "A word or phrase with two or more meanings used in a manner that permits more than one interpretation."
+      - referential: "A word or phrase that can refer to two or more things."
+      - syntactical: "The order of words allows two or more interpretations."
+  - id: vagueness
+    name: "Vagueness"
+    definition: "Lack of precision, structure and/or detail."
+  - id: complexity
+    name: "Complexity"
+    definition: "Compound requirements containing complex sub-clauses and/or several interrelated statements."
+  - id: omission
+    name: "Omission"
+    definition: "Missing requirements, particularly requirements to handle unwanted behaviour."
+  - id: duplication
+    name: "Duplication"
+    definition: "Repetition of requirements that are defining the same need."
+  - id: wordiness
+    name: "Wordiness"
+    definition: "Use of an unnecessary number of words."
+  - id: inappropriate_implementation
+    name: "Inappropriate Implementation"
+    definition: "Statements of how the system should be built, rather than what it should do."
+  - id: untestability
+    name: "Untestability"
+    definition: "Requirements that cannot be proven true or false when the system is implemented."
+
+# ===================================================================
+# REWRITING PATTERNS (Section 5)
+# ===================================================================
+rewriting_patterns:
+  - name: "Logical restructuring to increase clarity and understanding"
+  - name: "Reduced wordiness to create simpler statements"
+  - name: "The separation of complex triggers resulting in two or more atomic requirements"
+  - name: "Reusable statements and reusable formats"
+
+# ===================================================================
+# CASE STUDY RESULTS (Section 5)
+# ===================================================================
+case_study_results:
+  sample_size: 36
+  raw_avg_words_per_requirement: 36.9
+  ears_avg_words_per_requirement: 25.6
+  eliminated_problems:
+    - complexity
+    - omission
+    - duplication
+    - inappropriate_implementation
+    - untestability
+  reduced_problems:
+    - ambiguity
+    - vagueness
+    - wordiness
+  remaining_issues:
+    - "Lexical ambiguity: precondition understood by inference, not explicitly recorded"
+    - "General vagueness: innate feature of high-level requirements"
+    - "Wordiness: long requirements with numerous conditional clauses"
+
+# ===================================================================
+# LIMITATIONS (Section 6)
+# ===================================================================
+limitations:
+  - "Sample size was small (36 original requirements)."
+  - "Study restricted to high-level safety-related requirements. Other types may not be adequately represented."
+  - "Classification of vagueness is inevitably a matter of personal opinion and open to inconsistency."
